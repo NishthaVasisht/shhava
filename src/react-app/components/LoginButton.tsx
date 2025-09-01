@@ -22,31 +22,33 @@ export default function LoginButton({
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    redirect_uri: 'postmessage', // Critical for popup flow
+    redirect_uri: 'postmessage',
     onSuccess: async (response) => {
       console.log('✅ Google auth code received:', response.code);
+  
       try {
         const res = await fetch(`${apiUrl}/auth/google`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code: response.code }),
         });
-
+  
         const data = await res.json();
         console.log('📦 Auth response:', data);
-
+  
         if (data.success) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
           setEmailSent(true);
-
+  
           if (onLoginSuccess) onLoginSuccess(data);
-
+  
           setTimeout(() => {
-            navigate('/onboarding');
+            navigate('/');
             setEmailSent(false);
           }, 1500);
         } else {
+          console.error('❌ Auth failed response:', data);
           alert(data.message || 'Google login failed');
         }
       } catch (err) {
@@ -59,6 +61,7 @@ export default function LoginButton({
       alert('Login popup closed or failed');
     },
   });
+  
 
   const handleClick = () => {
     if (loading) return;
@@ -75,7 +78,7 @@ export default function LoginButton({
   };
 
   const buttonText = isAuthenticated
-    ? 'Already Logged In'
+    ? 'Already In Line'
     : emailSent
     ? 'Confirmation Sent ✅'
     : 'Join Waitlist 🏠';

@@ -73,7 +73,7 @@ export default function Home() {
       setWaitlistStatus(null);
       return;
     }
-  
+
     try {
       const res = await fetch(`${apiUrl}/me`, {
         headers: {
@@ -81,7 +81,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
       });
-  
+
       const contentType = res.headers.get('content-type');
       if (!contentType?.includes('application/json')) {
         const raw = await res.text();
@@ -89,9 +89,9 @@ export default function Home() {
         setWaitlistStatus(null);
         return;
       }
-  
+
       const data = await res.json();
-  
+
       if (res.ok && data.success && data.user) {
         setUserName(data.user.name);
         setWaitlistStatus('already_in_line');
@@ -105,7 +105,7 @@ export default function Home() {
       setWaitlistStatus(null);
     }
   };
-  
+
 
   useEffect(() => {
     setIsVisible(true);
@@ -162,8 +162,13 @@ export default function Home() {
       <nav className={`relative z-10 flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 md:p-8 transition-all duration-1000 ${isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}>
         <div className="flex items-center space-x-3 mb-4 sm:mb-0">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg hover-glow animate-neon-glow">
-            <Heart className="w-6 h-6 text-white" fill="currentColor" />
+            <img
+              src="./public/logo.png"
+              alt="icon"
+              className="w-6 h-6 object-contain"
+            />
           </div>
+
           <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift" style={{ fontFamily: 'Fredoka, sans-serif' }}>
             Shhava
           </span>

@@ -1,0 +1,7 @@
+# robots.txt for Shhava
+
+User-agent: *
+Allow: /
+
+# Point crawlers to your sitemap
+Sitemap: https://shhava.com/sitemap.xml
