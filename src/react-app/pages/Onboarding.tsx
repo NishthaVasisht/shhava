@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from "../context/AuthContext";
 import { Heart, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
 import { CULTURAL_BACKGROUNDS, FESTIVALS } from '../shared/types';
 

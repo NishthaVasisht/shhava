@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
 import { Heart, ArrowLeft, Edit2, Camera, Star, Shield, Settings, MapPin, Globe } from 'lucide-react';
 import { CULTURAL_BACKGROUNDS, FESTIVALS } from '../shared/types.ts';

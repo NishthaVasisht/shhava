@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Shield, AlertTriangle, Phone, Users, Eye, Settings, Clock, CheckCircle } from 'lucide-react';
 

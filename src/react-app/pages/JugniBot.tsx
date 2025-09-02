@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Send, Sparkles, Bot, Mic, MicOff } from 'lucide-react';
 

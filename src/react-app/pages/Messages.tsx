@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
 import { MessageCircle, Send, ArrowLeft, Search, Sparkles, Clock, Heart } from 'lucide-react';
 import VerifiedBadge from '../components/VerifiedBadge';

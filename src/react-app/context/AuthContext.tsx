@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [user, setUser] = useState<{ user_id: string; name: string; email: string } | null>(null);
-  const hasValidated = useRef(false); // Track if validation has occurred
+  const hasValidated = useRef(false);
 
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoginError(null);
 
     try {
-      console.log('[AuthProvider] Initiating login with /auth/google');
       const response = await fetch(`${apiUrl}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -50,10 +49,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('token', data.token);
       setUser(data.user);
       setIsAuthenticated(true);
-      console.log('[AuthProvider] Login successful, user:', data.user);
+
+      navigate('/dashboard'); // 👈 direct navigation
       return true;
     } catch (err: any) {
-      console.error('[AuthProvider] Login error:', err.message);
       setLoginError(err.message || 'Login failed');
       return false;
     } finally {
@@ -66,34 +65,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        console.log('[AuthProvider] Initiating logout with /auth/logout');
         await fetch(`${apiUrl}/auth/logout`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         });
       }
     } catch (err) {
-      console.error('[AuthProvider] Logout error:', err);
+      console.error('Logout error:', err);
     } finally {
       localStorage.removeItem('token');
       setUser(null);
       setIsAuthenticated(false);
       setLoading(false);
-      console.log('[AuthProvider] Logout complete, navigating to /');
       navigate('/');
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token || hasValidated.current) {
-      console.log('[AuthProvider] No token or already validated, skipping /me call');
-      return;
-    }
+    if (!token || hasValidated.current) return;
 
     const validateToken = async () => {
-      hasValidated.current = true; // Mark as validated
-      console.log('[AuthProvider] Validating token with /me');
+      hasValidated.current = true;
       try {
         const res = await fetch(`${apiUrl}/me`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -103,12 +96,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok && data.success && data.user) {
           setUser(data.user);
           setIsAuthenticated(true);
-          console.log('[AuthProvider] Token validation successful, user:', data.user);
         } else {
           throw new Error(data.message || 'Invalid token');
         }
-      } catch (err) {
-        console.error('[AuthProvider] Token validation error:', err);
+      } catch {
         localStorage.removeItem('token');
         setUser(null);
         setIsAuthenticated(false);
