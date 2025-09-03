@@ -21,7 +21,6 @@ interface PotentialMatch {
   sharedFestivals: string[];
   imageInitial: string;
   isVerified: boolean;
-  // Mode-specific data
   sharedPlaces?: string[];
   sharedMusic?: string[];
   sharedFood?: string[];
@@ -37,7 +36,14 @@ interface PotentialMatch {
   }>;
 }
 
-type DiscoveryMode = 'standard' | 'pehli_nazar' | 'rishta' | 'missed_moments' | 'mood_based' | 'cultural_cross' | 'fated_crossings';
+type DiscoveryMode =
+  | 'standard'
+  | 'pehli_nazar'
+  | 'rishta'
+  | 'missed_moments'
+  | 'mood_based'
+  | 'cultural_cross'
+  | 'fated_crossings';
 
 export default function Discover() {
   const { logout } = useAuth();
@@ -59,40 +65,30 @@ export default function Discover() {
 
   useEffect(() => {
     setIsVisible(true);
-    loadUserProfile();
-    
+
+    // Dummy profile
+    const mockProfile = {
+      name: "Chandler Bing",
+      age: 32,
+      interested_in: "everyone",
+      looking_for: "friends"
+    };
+    setUserProfile(mockProfile);
+    loadPotentialMatches(mockProfile);
+
     // Load Google Fonts
     const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap';
+    link.href =
+      'https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
-    
+
     return () => {
       document.head.removeChild(link);
     };
-  }, []);
-
-  useEffect(() => {
-    if (userProfile) {
-      loadPotentialMatches(userProfile);
-    }
-  }, [discoveryMode, userProfile]);
-
-  const loadUserProfile = async () => {
-    try {
-      const response = await fetch('/profile');
-      const data = await response.json();
-      setUserProfile(data.profile);
-      if (data.profile) {
-        loadPotentialMatches(data.profile);
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    }
-  };
+  }, [discoveryMode]);
 
   const loadPotentialMatches = (profile: any) => {
-    // Enhanced mock data based on discovery mode
     let mockMatches: PotentialMatch[] = [
       {
         id: 1,
@@ -202,16 +198,19 @@ export default function Discover() {
     // Filter based on user preferences
     if (profile?.interested_in && profile.interested_in !== 'everyone') {
       if (profile.interested_in === 'men') {
-        mockMatches = mockMatches.filter(match => match.gender === 'man');
+        mockMatches = mockMatches.filter((match) => match.gender === 'man');
       } else if (profile.interested_in === 'women') {
-        mockMatches = mockMatches.filter(match => match.gender === 'woman');
+        mockMatches = mockMatches.filter((match) => match.gender === 'woman');
       }
     }
 
     // Filter based on discovery mode
     if (discoveryMode === 'rishta') {
-      mockMatches = mockMatches.filter(match => 
-        profile?.looking_for === 'marriage' || match.profession === 'Doctor' || match.profession === 'Engineer'
+      mockMatches = mockMatches.filter(
+        (match) =>
+          profile?.looking_for === 'marriage' ||
+          match.profession === 'Doctor' ||
+          match.profession === 'Engineer'
       );
     }
 
@@ -219,7 +218,7 @@ export default function Discover() {
     setCurrentMatchIndex(0);
   };
 
-  const handleLike = async () => {
+  const handleLike = () => {
     console.log('Liked:', potentialMatches[currentMatchIndex]);
     nextMatch();
   };
@@ -230,7 +229,7 @@ export default function Discover() {
 
   const nextMatch = () => {
     if (currentMatchIndex < potentialMatches.length - 1) {
-      setCurrentMatchIndex(prev => prev + 1);
+      setCurrentMatchIndex((prev) => prev + 1);
     } else {
       setCurrentMatchIndex(0);
     }
@@ -561,7 +560,7 @@ export default function Discover() {
             {discoveryMode === 'mood_based' && 'That\'s What She Said About Emotions! 🧠'}
             {discoveryMode === 'cultural_cross' && 'SUIT UP! For Cross-Cultural Love 🌍'}
             {discoveryMode === 'fated_crossings' && 'It\'s Gonna Be Legend... Wait For It... 📍'}
-            {discoveryMode === 'standard' && 'How I Met You... Starts Here! 💜'}
+            {discoveryMode === 'standard' && 'Shhava... Starts Here! 💜'}
           </h1>
           <p className="text-gray-600 text-lg animate-slide-in-left delay-400" style={{ fontFamily: 'Fredoka, sans-serif' }}>
             {discoveryMode === 'pehli_nazar' && 'Could you BE any more compatible? Finding your cultural twin!'}

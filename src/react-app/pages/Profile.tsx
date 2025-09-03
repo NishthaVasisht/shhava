@@ -17,13 +17,13 @@ export default function Profile() {
   useEffect(() => {
     setIsVisible(true);
     fetchProfile();
-    
+
     // Load Google Fonts
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
-    
+
     return () => {
       document.head.removeChild(link);
     };
@@ -78,7 +78,8 @@ export default function Profile() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center">
         <div className="text-center">
-          <Heart className="w-16 h-16 text-purple-500 mx-auto mb-4 animate-heart-beat" />
+          <img src="./public/favicon.png" alt="icon" className="w-16 h-16 text-purple-500 mx-auto mb-4 animate-heart-beat" />
+          {/* <Heart className="w-16 h-16 text-purple-500 mx-auto mb-4 animate-heart-beat" /> */}
           <p className="text-gray-600" style={{ fontFamily: 'Fredoka, sans-serif' }}>Could this BE loading any slower? 😄</p>
         </div>
       </div>
@@ -91,7 +92,7 @@ export default function Profile() {
       <nav className={`bg-white/80 backdrop-blur-lg border-b border-purple-100 sticky top-0 z-50 transition-all duration-700 ${isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <button 
+            <button
               onClick={() => navigate('/dashboard')}
               className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-all duration-300 hover-lift"
             >
@@ -104,30 +105,30 @@ export default function Profile() {
               My Story
             </span>
           </div>
-          
+
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={() => navigate('/discover')}
               className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105 text-sm"
             >
               <Heart className="w-4 h-4" />
               <span className="hidden sm:inline">Find</span>
             </button>
-            <button 
+            <button
               onClick={() => navigate('/messages')}
               className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105 text-sm"
             >
               <Heart className="w-4 h-4" />
               <span className="hidden sm:inline">Perk</span>
             </button>
-            <button 
+            <button
               onClick={() => navigate('/safety')}
               className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105 text-sm"
             >
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Safe</span>
             </button>
-            <button 
+            <button
               onClick={logout}
               className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105 text-sm"
             >
@@ -172,7 +173,7 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-            
+
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover-lift animate-slide-in-right"
@@ -196,11 +197,10 @@ export default function Profile() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 p-4 flex items-center justify-center space-x-2 transition-all duration-300 animate-slide-in-up delay-${(index + 1) * 100} ${
-                  activeTab === tab.id
+                className={`flex-1 p-4 flex items-center justify-center space-x-2 transition-all duration-300 animate-slide-in-up delay-${(index + 1) * 100} ${activeTab === tab.id
                     ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-b-2 border-purple-500'
                     : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
-                }`}
+                  }`}
               >
                 <tab.icon className="w-4 h-4" />
                 <span className="font-medium" style={{ fontFamily: 'Fredoka, sans-serif' }}>{tab.label}</span>
@@ -304,11 +304,10 @@ export default function Profile() {
                         <button
                           key={lang}
                           onClick={() => handleArrayToggle('languages_spoken', lang)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 animate-slide-in-up delay-${(index + 1) * 50} ${
-                            editForm.languages_spoken?.includes(lang)
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 animate-slide-in-up delay-${(index + 1) * 50} ${editForm.languages_spoken?.includes(lang)
                               ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white animate-pulse-glow'
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                            }`}
                         >
                           {lang}
                         </button>
@@ -336,11 +335,10 @@ export default function Profile() {
                         <button
                           key={festival}
                           onClick={() => handleArrayToggle('festivals_celebrated', festival)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 animate-slide-in-up delay-${(index + 1) * 50} ${
-                            editForm.festivals_celebrated?.includes(festival)
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 animate-slide-in-up delay-${(index + 1) * 50} ${editForm.festivals_celebrated?.includes(festival)
                               ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white animate-pulse-glow'
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                            }`}
                         >
                           {festival}
                         </button>
@@ -436,9 +434,8 @@ export default function Profile() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-green-700">Profile Verification</span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        profile.is_verified ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${profile.is_verified ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'
+                        }`}>
                         {profile.is_verified ? 'LEGENDARY Verified' : 'Working on it...'}
                       </span>
                     </div>
@@ -459,7 +456,7 @@ export default function Profile() {
                     <h4 className="font-semibold text-blue-800 mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>Safety Settings</h4>
                     <p className="text-blue-600 text-sm">Manage privacy like Monica manages her apartment</p>
                   </button>
-                  
+
                   <button className="p-4 bg-purple-50 border border-purple-200 rounded-xl hover:bg-purple-100 transition-colors text-left">
                     <h4 className="font-semibold text-purple-800 mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>Block & Report</h4>
                     <p className="text-purple-600 text-sm">Keep the creeps away - no Ross energy allowed!</p>

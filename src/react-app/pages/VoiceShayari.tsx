@@ -146,7 +146,7 @@ export default function VoiceShayari() {
   const handleShare = (shayari: GeneratedShayari) => {
     if (navigator.share) {
       navigator.share({
-        title: 'LEGEN... wait for it... DARY Shayari from How I Met You',
+        title: 'LEGEN... wait for it... DARY Shayari from Shhava',
         text: shayari.text,
         url: window.location.href
       });

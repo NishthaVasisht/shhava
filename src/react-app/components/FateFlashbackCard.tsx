@@ -41,7 +41,7 @@ export default function FateFlashbackCard({
 
   const handleShare = () => {
     onShare(flashback._id);
-    const shareText = `${flashback.title}\n\n${flashback.story_content}\n\n✨ Discover your own fate flashbacks on How I Met You! 💜`;
+    const shareText = `${flashback.title}\n\n${flashback.story_content}\n\n✨ Discover your own fate flashbacks on Shhava! 💜`;
     navigator.clipboard?.writeText(shareText);
   };
 

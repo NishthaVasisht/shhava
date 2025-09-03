@@ -1,504 +1,285 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import {
-  Heart,
-  Sparkles,
-  MapPin,
-  MessageCircle,
-  Shield,
-  Star,
-  Plus,
-  Clock,
-  Award,
-} from "lucide-react";
-import FateFlashbackCard from "../components/FateFlashbackCard";
+import { Sparkles, Plus, Clock, Menu, X } from "lucide-react";
+import FateFlashbackCard, { FateFlashback } from "../components/FateFlashbackCard";
 import VerifiedByBharatBadge from "../components/VerifiedByBharatBadge";
+import Footer from "../components/footer";
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
-  const [serendipityMoments, setSerendipityMoments] = useState<any[]>([]);
-  const [fateFlashbacks, setFateFlashbacks] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Mock profile
+  const [profile] = useState<any>({
+    name: "Chandler Bing",
+    age: 32,
+    location_city: "New York",
+    location_state: "NY",
+    looking_for: "Friends... or more 😉",
+    cultural_background: "Sitcom Universe",
+    is_verified: true,
+    verification_types: ["government_id"],
+  });
+
+  const [serendipityMoments, setSerendipityMoments] = useState<any[]>([
+    {
+      id: "1",
+      location_name: "Central Perk",
+      emotional_state: "nostalgic",
+      moment_description: "Shared a coffee glance over a giant orange couch ☕",
+      created_at: new Date().toISOString(),
+    },
+  ]);
+
+  const [fateFlashbacks, setFateFlashbacks] = useState<FateFlashback[]>([
+    {
+      _id: "101",
+      title: "The One with the Missed Coffee",
+      story_content:
+        "You and someone special ordered coffee at the same time, but at different counters. Classic sitcom timing!",
+      week_start_date: "2025-08-25",
+      week_end_date: "2025-09-01",
+      crossings_count: 3,
+      shared_locations: ["Central Perk", "Coffee House"],
+      is_viewed: false,
+      is_shared: false,
+    },
+  ]);
+
   const [isVisible, setIsVisible] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // mobile menu toggle
 
   useEffect(() => {
-    fetchProfile();
-    fetchSerendipityMoments();
-    fetchFateFlashbacks();
     setIsVisible(true);
-
-    // Load Google Fonts dynamically
-    const link = document.createElement("link");
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    return () => {
-      document.head.removeChild(link);
-    };
   }, []);
 
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${apiUrl}/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setProfile(data.user || data.profile);
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchSerendipityMoments = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${apiUrl}/serendipity-moments`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setSerendipityMoments(data.moments || []);
-    } catch (error) {
-      console.error("Error fetching serendipity moments:", error);
-    }
-  };
-
-  const fetchFateFlashbacks = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${apiUrl}/flashbacks`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setFateFlashbacks(data.flashbacks?.slice(0, 2) || []);
-    } catch (error) {
-      console.error("Error fetching fate flashbacks:", error);
-    }
-  };
-
-  const handleViewFlashback = async (id: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      await fetch(`${apiUrl}/flashbacks/${id}/view`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFateFlashbacks((prev) =>
-        prev.map((fb) => (fb._id === id ? { ...fb, is_viewed: true } : fb))
-      );
-    } catch (error) {
-      console.error("Error marking flashback as viewed:", error);
-    }
-  };
-
-  const handleShareFlashback = async (id: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      await fetch(`${apiUrl}/flashbacks/${id}/share`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFateFlashbacks((prev) =>
-        prev.map((fb) => (fb._id === id ? { ...fb, is_shared: true } : fb))
-      );
-    } catch (error) {
-      console.error("Error sharing flashback:", error);
-    }
-  };
-
-  const createSerendipityMoment = async () => {
-    const newMoment = {
-      location_name: "Coffee House, Ludhiana",
-      latitude: 30.9,
-      longitude: 75.85,
-      moment_description:
-        "Saw someone reading poetry at the corner table, our eyes met briefly over 'Ghalib' verses",
-      emotional_state: "contemplative",
-    };
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${apiUrl}/serendipity-moments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newMoment),
-      });
-
-      if (response.ok) {
-        fetchSerendipityMoments();
-      }
-    } catch (error) {
-      console.error("Error creating Itera moment:", error);
-    }
-  };
-
-  if (isLoading || !profile) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center">
-        <div className="text-center">
-          <Heart className="w-16 h-16 text-purple-600 mx-auto mb-4 animate-neon-glow" />
-          <div className="loading-skeleton w-48 h-4 rounded mx-auto mb-2"></div>
-          <div className="loading-skeleton w-32 h-3 rounded mx-auto"></div>
-          <p
-            className="text-gray-600 mt-4 animate-fade-in delay-500"
-            style={{ fontFamily: "Fredoka, sans-serif" }}
-          >
-            Could this BE loading any slower? 😄
-          </p>
-        </div>
-      </div>
+  const handleViewFlashback = (id: string) => {
+    setFateFlashbacks((prev) =>
+      prev.map((fb) => (fb._id === id ? { ...fb, is_viewed: true } : fb))
     );
-  }
+  };
+
+  const handleShareFlashback = (id: string) => {
+    setFateFlashbacks((prev) =>
+      prev.map((fb) => (fb._id === id ? { ...fb, is_shared: true } : fb))
+    );
+  };
+
+  const createSerendipityMoment = () => {
+    setSerendipityMoments((prev) => [
+      ...prev,
+      {
+        id: Math.random().toString(),
+        location_name: "MacLaren’s Pub",
+        emotional_state: "excited",
+        moment_description: "Two drinks clinked at the exact same time 🍻",
+        created_at: new Date().toISOString(),
+      },
+    ]);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white">
       {/* Navigation */}
-      <nav
-        className={`bg-white/80 backdrop-blur-lg border-b border-purple-100 sticky top-0 z-50 transition-all duration-700 ${
-          isVisible ? "animate-slide-in-up" : "opacity-0"
-        }`}
-      >
+      <nav className="bg-black/60 backdrop-blur-lg border-b border-purple-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg hover-glow animate-neon-glow">
-              <Heart className="w-6 h-6 text-white" fill="currentColor" />
+            <div className="w-10 h-10 bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <img src="/logo.png" alt="icon" className="w-6 h-6 object-contain" />
             </div>
-            <span
-              className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
-              How I Met You
+            <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              Shhava
             </span>
           </div>
 
-          <div className="flex items-center space-x-6">
-            <button
-              onClick={() => navigate("/discover")}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-200">
+            <button onClick={() => navigate("/discover")}>Find The One 💕</button>
+            <button onClick={() => navigate("/fated-crossings")}>Missed 🎭</button>
+            <button onClick={() => navigate("/fate-flashbacks")}>Stories 📚</button>
+            <button onClick={() => navigate("/messages")}>Central Perk ☕</button>
+            <button onClick={() => navigate("/profile")}>My Story 📖</button>
+            <button onClick={logout}>Peace Out ✌️</button>
+          </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden text-gray-200 hover:text-pink-400 transition"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+          </button>
+        </div>
+
+        {/* Mobile Dropdown */}
+        {menuOpen && (
+          <div className="md:hidden bg-black/80 backdrop-blur-lg border-t border-purple-800 px-6 py-4 space-y-4 text-gray-200 text-sm font-medium">
+            <button className="block w-full text-left" onClick={() => navigate("/discover")}>
               Find The One 💕
             </button>
-            <button
-              onClick={() => navigate("/fated-crossings")}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
-              Missed Connections 🎭
+            <button className="block w-full text-left" onClick={() => navigate("/fated-crossings")}>
+              Missed 🎭
             </button>
-            <button
-              onClick={() => navigate("/fate-flashbacks")}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
-              Weekly Stories 📚
+            <button className="block w-full text-left" onClick={() => navigate("/fate-flashbacks")}>
+              Stories 📚
             </button>
-            <button
-              onClick={() => navigate("/messages")}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
+            <button className="block w-full text-left" onClick={() => navigate("/messages")}>
               Central Perk ☕
             </button>
-            <button
-              onClick={() => navigate("/profile")}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
+            <button className="block w-full text-left" onClick={() => navigate("/profile")}>
               My Story 📖
             </button>
-            <button
-              onClick={logout}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105"
-              style={{ fontFamily: "Fredoka, sans-serif" }}
-            >
+            <button className="block w-full text-left text-pink-400" onClick={logout}>
               Peace Out ✌️
             </button>
           </div>
-        </div>
+        )}
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Main Body */}
+      <div className="max-w-7xl mx-auto px-6 py-10">
         {/* Welcome Header */}
-        <div
-          className={`mb-8 transition-all duration-1000 delay-200 ${
-            isVisible ? "animate-slide-in-up" : "opacity-0"
-          }`}
-        >
-          <h1
-            className="text-4xl font-bold text-gray-800 mb-2 animate-text-reveal"
-            style={{ fontFamily: "Fredoka, sans-serif" }}
-          >
-            {profile.name}, could you BE any more awesome? 💜
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            {profile.name}, your episode starts now 🎬
           </h1>
-          <p
-            className="text-gray-600 text-lg animate-slide-in-left delay-300"
-            style={{ fontFamily: "Inter, sans-serif" }}
-          >
-            Your story's about to get <em>really</em> good... Time for some
-            legendary moments! 🎬
+          <p className="text-gray-400 italic">
+            “Could this BE any more legendary?” –{" "}
+            <span className="text-pink-400">Probably you</span>
           </p>
+
+          {/* FIXED GIF (works on all devices) */}
+          <img
+            src="https://i.giphy.com/media/vNITrslTkxf8Y/giphy.gif"
+            alt="Chandler sarcasm"
+            className="mx-auto mt-6 rounded-2xl shadow-lg w-full max-w-xs sm:max-w-sm md:max-w-md border border-purple-700 object-contain"
+          />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Fate Flashbacks Preview */}
-            {fateFlashbacks.length > 0 && (
-              <div
-                className={`bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl hover-lift transition-all duration-1000 delay-300 ${
-                  isVisible ? "animate-slide-in-up" : "opacity-0"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-3 animate-slide-in-left">
-                    <Clock className="w-6 h-6 text-purple-500 animate-bounce-gentle" />
-                    <h2
-                      className="text-2xl font-bold text-gray-800"
-                      style={{ fontFamily: "Playfair Display, serif" }}
-                    >
-                      This Week's Fate Flashbacks
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => navigate("/fate-flashbacks")}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-300 hover-lift animate-slide-in-right"
-                  >
-                    <span>View All Stories</span>
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {fateFlashbacks.map((flashback) => (
-                    <FateFlashbackCard
-                      key={flashback._id}
-                      flashback={flashback}
-                      onView={handleViewFlashback}
-                      onShare={handleShareFlashback}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            {/* Serendipity Moments */}
-            <div className={`bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl hover-lift transition-all duration-1000 delay-${fateFlashbacks.length > 0 ? '500' : '400'} ${isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}>
+            {/* Flashbacks */}
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-lg border border-purple-800/40">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3 animate-slide-in-left">
-                  <Sparkles className="w-6 h-6 text-orange-500 animate-bounce-gentle" />
-                  <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Playfair Display, serif' }}>
-                    Your Itera Moments
-                  </h2>
+                <div className="flex items-center space-x-3">
+                  <Clock className="w-5 h-5 md:w-6 md:h-6 text-pink-400" />
+                  <h2 className="text-xl md:text-2xl font-bold">This Week’s Flashbacks</h2>
+                </div>
+                <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-sm md:text-base">
+                  View All
+                </button>
+              </div>
+              <div className="space-y-4">
+                {fateFlashbacks.map((flashback) => (
+                  <FateFlashbackCard
+                    key={flashback._id}
+                    flashback={flashback}
+                    onView={handleViewFlashback}
+                    onShare={handleShareFlashback}
+                  />
+                ))}
+              </div>
+              <p className="mt-4 text-gray-400 text-xs md:text-sm italic">
+                “It’s like Netflix weekly drops… but starring YOU.” 🍿
+              </p>
+            </div>
+
+            {/* Moments */}
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-lg border border-pink-800/40">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
+                  <h2 className="text-xl md:text-2xl font-bold">Your Sitcom Moments</h2>
                 </div>
                 <button
                   onClick={createSerendipityMoment}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-300 hover-lift animate-slide-in-right"
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-white text-sm md:text-base"
                 >
-                  <Plus className="w-4 h-4 animate-bounce-gentle" />
-                  <span>Add Moment</span>
+                  <Plus className="w-4 h-4 inline mr-1" /> Add
                 </button>
               </div>
-
-              {serendipityMoments.length === 0 ? (
-                <div className="text-center py-12 animate-fade-in delay-500">
-                  <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4 animate-float" />
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2 animate-slide-in-up delay-600">No moments yet</h3>
-                  <p className="text-gray-500 mb-6 animate-slide-in-up delay-700">Start capturing your Itera encounters</p>
-                  <button
-                    onClick={createSerendipityMoment}
-                    className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover-lift animate-bounce-gentle delay-800"
+              <div className="space-y-4">
+                {serendipityMoments.map((moment) => (
+                  <div
+                    key={moment.id}
+                    className="p-4 md:p-6 bg-white/5 rounded-2xl border border-purple-700"
                   >
-                    Create Your First Moment
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {serendipityMoments.map((moment, index) => (
-                    <div key={moment.id} className={`p-6 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100 hover-lift animate-slide-in-up delay-${(index + 1) * 100}`}>
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-xl flex items-center justify-center animate-pulse-glow">
-                          <MapPin className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2 animate-slide-in-left delay-200">
-                            <h3 className="font-semibold text-gray-800">{moment.location_name}</h3>
-                            <span className="text-sm text-orange-600 bg-orange-100 px-2 py-1 rounded-full animate-shimmer">
-                              {moment.emotional_state}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 mb-3 animate-slide-in-left delay-300">{moment.moment_description}</p>
-                          <p className="text-sm text-gray-500 animate-fade-in delay-400">
-                            {new Date(moment.created_at).toLocaleDateString('en-IN', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* AI Features Showcase */}
-            <div className={`bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl hover-lift transition-all duration-1000 delay-${fateFlashbacks.length > 0 ? '700' : '600'} ${isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 animate-slide-in-left" style={{ fontFamily: 'Playfair Display, serif' }}>
-                AI-Powered Love Features
-              </h2>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {[
-                  {
-                    icon: MessageCircle,
-                    title: "Jugni Bot",
-                    description: "Your AI companion for love advice and conversation starters",
-                    status: "Active",
-                    link: "/ai/jugni-bot"
-                  },
-                  {
-                    icon: Sparkles,
-                    title: "Voice Shayari",
-                    description: "Generate personalized poetry in your voice and language",
-                    status: "Active",
-                    link: "/ai/voice-shayari"
-                  },
-                  {
-                    icon: Shield,
-                    title: "Creep Detector",
-                    description: "AI-powered safety screening for all interactions",
-                    status: "Active",
-                    link: "/safety"
-                  },
-                  {
-                    icon: Star,
-                    title: "Cultural Matching",
-                    description: "Find connections based on shared traditions and values",
-                    status: "Active",
-                    link: "/discover"
-                  },
-                  {
-                    icon: MapPin,
-                    title: "Fated Crossings",
-                    description: "Discover people who crossed your path in real life",
-                    status: "Active",
-                    link: "/fated-crossings"
-                  },
-                  {
-                    icon: Award,
-                    title: "Verified by Bharat",
-                    description: "Join India's most trusted dating community",
-                    status: "Active",
-                    link: "/profile"
-                  }
-                ].map((feature, index) => (
-                  <button
-                    key={index}
-                    onClick={() => navigate(feature.link)}
-                    className={`w-full text-left p-6 bg-gradient-to-br from-gray-50 to-orange-50 rounded-2xl border border-gray-200 hover-lift animate-slide-in-up delay-${(index + 1) * 100} hover:shadow-lg transition-all duration-300`}
-                  >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <feature.icon className="w-6 h-6 text-orange-500 animate-bounce-gentle" />
-                      <h3 className="font-semibold text-gray-800">{feature.title}</h3>
-                      <span className={`text-xs px-2 py-1 rounded-full animate-shimmer ${feature.status === 'Active'
-                          ? 'bg-green-100 text-green-600 animate-pulse-glow'
-                          : 'bg-orange-100 text-orange-600'
-                        }`}>
-                        {feature.status}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 text-sm animate-fade-in delay-200">{feature.description}</p>
-                  </button>
+                    <h3 className="font-semibold">{moment.location_name}</h3>
+                    <p className="text-gray-300">{moment.moment_description}</p>
+                    <span className="text-xs md:text-sm text-pink-400">{moment.emotional_state}</span>
+                  </div>
                 ))}
               </div>
+              <p className="mt-4 text-gray-400 text-xs md:text-sm italic">
+                “Some people collect stamps. You? You collect awkward encounters.” 🙃
+              </p>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Profile Summary */}
-            <div className={`bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover-lift transition-all duration-1000 delay-${fateFlashbacks.length > 0 ? '600' : '500'} ${isVisible ? 'animate-slide-in-right' : 'opacity-0'}`}>
-              <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 animate-pulse-glow">
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-purple-700 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-bold mx-auto mb-4">
                   {profile.name.charAt(0)}
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 animate-slide-in-up">{profile.name}</h3>
-                <p className="text-gray-600 animate-slide-in-up delay-100">{profile.age} • {profile.location_city}, {profile.location_state}</p>
+                <h3 className="text-lg md:text-xl font-bold">{profile.name}</h3>
+                <p className="text-gray-300 text-sm md:text-base">
+                  {profile.age} • {profile.location_city}, {profile.location_state}
+                </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 animate-slide-in-left delay-200">
-                  <Heart className="w-4 h-4 text-orange-500 animate-heart-beat" />
-                  <span className="text-sm text-gray-600">Looking for {profile.looking_for}</span>
-                </div>
-                <div className="flex items-center space-x-3 animate-slide-in-left delay-300">
-                  <Sparkles className="w-4 h-4 text-orange-500 animate-bounce-gentle" />
-                  <span className="text-sm text-gray-600">{profile.cultural_background} background</span>
-                </div>
-                <div className="flex items-center space-x-3 animate-slide-in-left delay-400">
-                  {profile.is_verified ? (
-                    <VerifiedByBharatBadge
-                      verificationTypes={profile.verification_types || ['government_id']}
-                      size="sm"
-                      className="flex-shrink-0"
-                    />
-                  ) : (
-                    <>
-                      <Shield className="w-4 h-4 text-orange-500" />
-                      <span className="text-sm text-gray-600">Verification Pending</span>
-                    </>
-                  )}
-                </div>
-              </div>
+              <VerifiedByBharatBadge
+                verificationTypes={profile.verification_types}
+                size="sm"
+              />
+
+              <p className="text-gray-400 mt-3 text-xs italic">
+                “Certified safe. Unlike Joey’s fridge.” 🥶
+              </p>
             </div>
 
+
             {/* Quick Actions */}
-            <div className={`bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover-lift transition-all duration-1000 delay-${fateFlashbacks.length > 0 ? '800' : '700'} ${isVisible ? 'animate-slide-in-right' : 'opacity-0'}`}>
-              <h3 className="text-lg font-bold text-gray-800 mb-4 animate-slide-in-up">Quick Actions</h3>
+            <div className="bg-gradient-to-br from-black/70 via-purple-900/40 to-pink-900/40 
+                backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-pink-600/50 
+                hover:shadow-pink-500/20 transition-all duration-500 hover-lift">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white animate-pulse" />
+                </div>
+                <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  Quick Actions
+                </h3>
+              </div>
+
               <div className="space-y-3">
-                <button
-                  onClick={() => navigate('/discover')}
-                  className="w-full text-left p-3 rounded-xl bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 transition-all border border-orange-100 hover-lift animate-slide-in-left delay-100"
-                >
-                  <span className="text-gray-700 font-medium">Start Discovering</span>
+                <button className="w-full p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white flex items-center justify-between hover:scale-105 transition-all text-sm md:text-base">
+                  Start Discovering <span className="italic text-pink-200 text-xs md:text-sm">"Suit up!"</span>
                 </button>
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="w-full text-left p-3 rounded-xl bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 transition-all border border-orange-100 hover-lift animate-slide-in-left delay-200"
-                >
-                  <span className="text-gray-700 font-medium">Update Profile</span>
+                <button className="w-full p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 text-white flex items-center justify-between hover:scale-105 transition-all text-sm md:text-base">
+                  Update Profile <span className="italic text-purple-200 text-xs md:text-sm">"Could this BE any newer?"</span>
                 </button>
-                <button
-                  onClick={() => navigate('/safety')}
-                  className="w-full text-left p-3 rounded-xl bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 transition-all border border-orange-100 hover-lift animate-slide-in-left delay-300"
-                >
-                  <span className="text-gray-700 font-medium">Safety Settings</span>
+                <button className="w-full p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 text-white flex items-center justify-between hover:scale-105 transition-all text-sm md:text-base">
+                  Safety Settings <span className="italic text-pink-200 text-xs md:text-sm">"Pivot… to safety!"</span>
                 </button>
-                <button
-                  onClick={() => navigate('/fate-flashbacks')}
-                  className="w-full text-left p-3 rounded-xl bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 transition-all border border-orange-100 hover-lift animate-slide-in-left delay-400"
-                >
-                  <span className="text-gray-700 font-medium">View Fate Stories</span>
+                <button className="w-full p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white flex items-center justify-between hover:scale-105 transition-all text-sm md:text-base">
+                  View Stories <span className="italic text-purple-200 text-xs md:text-sm">"Like binge-watching, but fate." 📺</span>
                 </button>
               </div>
+
+              <p className="mt-5 text-pink-300 text-xs italic text-center">
+                “Quick actions… because nobody told you life was gonna be this way.” 👏👏👏👏
+              </p>
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -408,7 +408,7 @@ export default function Onboarding() {
               <Heart className="w-6 h-6 text-white" fill="currentColor" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              How I Met You
+              Shhava
             </span>
           </div>
           

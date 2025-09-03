@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import LoginButton from '../components/LoginButton';
 import { Heart, Sparkles, Star, Shield, RefreshCw, BadgeCheck, SlidersHorizontal, Languages, MessageCircle, Gift, MapPin } from 'lucide-react';
-import DarkModeToggle from '../components/DarkModeToggle';
 
 export default function Home() {
   const [currentFeature, setCurrentFeature] = useState(0);
@@ -128,7 +127,6 @@ export default function Home() {
           <button className="text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium hover:scale-105 text-base sm:text-lg" style={{ fontFamily: 'Fredoka, sans-serif' }}>
             Safety First 🛡️
           </button>
-          <DarkModeToggle size="sm" showLabel={false} />
           <div className="hidden sm:block animate-slide-in-right delay-200">
             <LoginButton variant="small" onLoginSuccess={handleLoginSuccess} />
           </div>
